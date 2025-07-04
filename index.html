@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate QR Code Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-qrcode"></i> Ultimate QR Generator</h1>
+            <p>Create, customize, and track QR codes with ease</p>
+        </div>
+
+        <div class="app-body">
+            <div class="panel">
+                <div class="panel-title">
+                    <i class="fas fa-cogs"></i>
+                    <h2>QR Generator</h2>
+                </div>
+
+                <div class="qr-display-section">
+                    <div id="qrcode" class="qrcode">
+                        <div class="qrcode-placeholder">
+                            <i class="fas fa-qrcode qrcode-placeholder-icon"></i>
+                            <p>Your QR code will appear here</p>
+                        </div>
+                    </div>
+
+                    <div id="scan-section" class="hidden">
+                        <div class="scanner-overlay">
+                            <video id="scanner" muted playsinline aria-label="QR Code Scanner"></video>
+                        </div>
+                        <button id="stop-scan" class="btn-accent">
+                            <i class="fas fa-stop"></i> Stop Scanner
+                        </button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" id="qr-input" placeholder="Enter text, URL, or data..." required>
+                    <button id="generate-btn" class="btn-primary">
+                        <i class="fas fa-bolt"></i> Generate
+                    </button>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="scan-toggle" class="btn-secondary">
+                        <i class="fas fa-camera"></i> Scan QR
+                    </button>
+                    <button id="copy-btn" class="btn-secondary">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <button id="share-btn" class="btn-secondary">
+                        <i class="fas fa-share-alt"></i> Share
+                    </button>
+                </div>
+
+                <div class="toggle-section" id="toggle-advanced">
+                    <div>
+                        <i class="fas fa-sliders-h"></i> Advanced Options
+                    </div>
+                    <div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+
+                <div id="advanced-options" class="hidden">
+                    <div class="options-panel">
+                        <div class="option-group">
+                            <label for="qr-type">QR Code Type:</label>
+                            <select id="qr-type">
+                                <option value="text">Text/URL</option>
+                                <option value="wifi">Wi-Fi</option>
+                                <option value="contact">Contact</option>
+                                <option value="crypto">Cryptocurrency</option>
+                            </select>
+                        </div>
+
+                        <div class="option-group">
+                            <label for="error-correction">Error Correction:</label>
+                            <select id="error-correction">
+                                <option value="L">Low (7%)</option>
+                                <option value="M" selected>Medium (15%)</option>
+                                <option value="Q">High (25%)</option>
+                                <option value="H">Max (30%)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <label>Colors:</label>
+                        <div class="color-group">
+                            <label for="qr-color">
+                                <input type="color" id="qr-color" value="#000000" title="Choose QR Color">
+                                QR Color
+                            </label>
+                        </div>
+                        <div class="color-group bg-color-group">
+                        <label for="bg-color">
+                            <input type="color" id="bg-color" value="#ffffff" title="Select background color">
+                            Background
+                        </label>
+                    </div>
+
+                    </div>
+
+                    <div class="option-group">
+                        <label for="qr-size">Size: <span class="range-value" id="size-value">200px</span></label>
+                        <div class="range-group">
+                            <input type="range" id="qr-size" min="100" max="500" value="200">
+                        </div>
+                    </div>
+
+                    <div class="option-group">
+                        <label>
+                            <input type="checkbox" id="encrypt-toggle"> 
+                            <i class="fas fa-lock"></i> Password Protect
+                        </label>
+                        <input type="password" id="encrypt-password" class="hidden" placeholder="Set password" style="margin-top: 10px;">
+                    </div>
+
+                    <div class="option-group">
+                        <label for="logo-upload">
+                            <i class="fas fa-image"></i> Add Logo
+                        </label>
+                        <input type="file" id="logo-upload" accept="image/*" style="margin-top: 5px;">
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="download-png" class="btn-primary">
+                        <i class="fas fa-download"></i> PNG
+                    </button>
+                    <button id="download-svg" class="btn-primary">
+                        <i class="fas fa-download"></i> SVG
+                    </button>
+                    <button id="download-jpg" class="btn-primary">
+                        <i class="fas fa-download"></i> JPG
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">
+                    <i class="fas fa-history"></i>
+                    <h2>History</h2>
+                    <button id="clear-history" class="btn-outline" style="margin-left: auto;">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                </div>
+
+                <div class="history-panel">
+                    <div id="history-list"></div>
+                </div>
+
+                <div class="panel-title" style="margin-top: 2rem;">
+                    <i class="fas fa-wifi"></i>
+                    <h2>Wi-Fi QR Generator</h2>
+                </div>
+
+                <div class="option-group">
+                    <input type="text" id="wifi-ssid" placeholder="Wi-Fi Name (SSID)">
+                </div>
+
+                <div class="option-group">
+                    <input type="text" id="wifi-password" placeholder="Password">
+                </div>
+
+                <div class="option-group">
+                    <label for="wifi-encryption">Encryption Type:</label>
+                    <select id="wifi-encryption">
+                        <option value="WPA">WPA/WPA2</option>
+                        <option value="WEP">WEP</option>
+                        <option value="nopass">Open</option>
+                    </select>
+                </div>
+
+                <button id="generate-wifi" class="btn-secondary" style="width: 100%; margin-top: 10px;">
+                    <i class="fas fa-wifi"></i> Generate Wi-Fi QR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <button id="dark-mode-toggle" class="dark-mode-toggle" aria-label="Toggle Dark Mode">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div id="toast" class="toast hidden">
+        <i class="fas fa-check-circle"></i>
+        <span id="toast-message">Successfully generated QR code!</span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
