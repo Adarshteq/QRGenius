@@ -48,7 +48,7 @@
 
 ## Live Demo 🚀
 
-
+https://adarshteq.github.io/QRGenius/
 
 ## Installation 💻
 
